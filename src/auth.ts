@@ -17,7 +17,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   })],
   pages: { signIn: "/login" },
   callbacks: {
-    jwt: ({ token, user }) => { if (user) { token.role = user.role; token.mustChangePassword = user.mustChangePassword }; return token },
-    session: ({ session, token }) => { if (session.user) { session.user.id = token.sub!; session.user.role = token.role as "KETUA" | "BENDAHARA" | "ANGGOTA"; session.user.mustChangePassword = Boolean(token.mustChangePassword) }; return session },
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.role = user.role;
+        token.mustChangePassword = user.mustChangePassword;
+      } else if (token.sub) {
+        const dbUser = await prisma.user.findUnique({ where: { id: token.sub }, select: { role: true, mustChangePassword: true } });
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.mustChangePassword = dbUser.mustChangePassword;
+        }
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      if (session.user) {
+        session.user.id = token.sub!;
+        session.user.role = token.role as "KETUA" | "BENDAHARA" | "ANGGOTA";
+        session.user.mustChangePassword = Boolean(token.mustChangePassword);
+      }
+      return session;
+    },
   },
 })

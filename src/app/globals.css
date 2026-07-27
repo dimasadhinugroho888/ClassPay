@@ -3,3 +3,6 @@
 * { box-sizing: border-box; }
 body { margin: 0; background: #020617; color: #f8fafc; font-family: var(--font-sans); }
 input, button { font: inherit; }
+input, textarea, select { width: 100%; border: 1px solid #334155; border-radius: .7rem; background: #0f172a; color: #f8fafc; padding: .7rem .8rem; outline: none; }
+input:focus, textarea:focus, select:focus { border-color: #34d399; }
+textarea { resize: vertical; }

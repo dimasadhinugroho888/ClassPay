@@ -1,0 +1,665 @@
+# 🚀 MASTER PROMPT - CLASSPAY
+
+## Sistem Manajemen Tagihan & Kas Kelas Berbasis Web
+
+Bertindaklah sebagai **Senior Full Stack Engineer, Senior UI/UX Designer, Senior Database Engineer, dan Software Architect**.
+
+Bangun sebuah aplikasi web **production-ready** bernama **ClassPay**, yaitu sistem manajemen tagihan dan kas kelas berbasis web yang modern, cepat, responsif, aman, dan mudah digunakan.
+
+Aplikasi ini ditujukan untuk membantu **Ketua Kelas**, **Bendahara**, dan **Anggota/Siswa** dalam mengelola kas kelas secara digital.
+
+---
+
+# Tujuan Aplikasi
+
+Menggantikan pencatatan manual menggunakan buku atau Excel menjadi sistem digital yang mudah digunakan.
+
+Pembayaran dilakukan **langsung kepada bendahara (cash/manual)**.
+
+**Jangan implementasikan:**
+
+* Upload bukti pembayaran
+* Transfer bank
+* QRIS
+* Payment Gateway
+* Midtrans
+* Xendit
+
+Pembayaran hanya dicatat oleh Bendahara.
+
+---
+
+# Tech Stack (WAJIB)
+
+## Framework
+
+* Next.js 15 (App Router)
+* TypeScript (Strict Mode)
+
+## Styling
+
+* Tailwind CSS
+* shadcn/ui
+* Lucide React
+* Framer Motion
+
+## Database
+
+Gunakan **Neon PostgreSQL** sebagai **satu-satunya database**.
+
+Jangan menggunakan:
+
+* SQLite
+* MySQL
+* MariaDB
+* MongoDB
+* Supabase Database
+
+## ORM
+
+Gunakan **Prisma ORM**.
+
+Semua query database harus menggunakan Prisma.
+
+Gunakan Prisma Migrate.
+
+Gunakan Prisma Client.
+
+## Authentication
+
+Auth.js (Credentials Provider)
+
+Role Based Authentication.
+
+## Validation
+
+Zod
+
+## Charts
+
+Recharts
+
+## Export
+
+* ExcelJS
+* jsPDF
+
+## Hosting
+
+Deploy ke **Vercel**
+
+---
+
+# Database
+
+Gunakan Neon PostgreSQL.
+
+Connection menggunakan:
+
+DATABASE_URL
+
+Semua tabel dibuat menggunakan Prisma Migration.
+
+Gunakan UUID atau CUID sebagai Primary Key.
+
+Gunakan Foreign Key.
+
+Gunakan Index.
+
+Gunakan PostgreSQL Enum.
+
+---
+
+# Role
+
+## 👑 Ketua Kelas
+
+Hak akses:
+
+* Dashboard
+* Kelola anggota
+* Tambah anggota
+* Edit anggota
+* Hapus anggota
+* Menunjuk Bendahara
+* Mengganti Bendahara
+* Melihat seluruh pembayaran
+* Melihat seluruh tagihan
+* Melihat seluruh laporan
+* Melihat saldo kas
+* Export Excel
+* Export PDF
+* Melihat Audit Log
+
+Ketua tidak mengelola pembayaran.
+
+---
+
+## 💰 Bendahara
+
+Hak akses:
+
+* Dashboard
+* Membuat tagihan
+* Edit tagihan
+* Hapus tagihan
+* Menandai siswa Lunas
+* Membatalkan status Lunas
+* Mengelola pengeluaran
+* Melihat seluruh pembayaran
+* Export Excel
+* Export PDF
+* Mengirim Reminder WhatsApp
+
+---
+
+## 👤 Anggota / Siswa
+
+Hak akses:
+
+* Dashboard
+* Melihat tagihan miliknya
+* Melihat riwayat pembayaran miliknya
+* Melihat total tunggakan
+
+Tidak boleh melihat data anggota lain.
+
+---
+
+# Login
+
+Ketua membuat akun anggota.
+
+Field:
+
+* Nama Lengkap
+* Nomor WhatsApp
+* Username
+* Password
+
+Role default:
+
+Anggota
+
+Saat login pertama:
+
+Wajib mengganti password.
+
+---
+
+# Dashboard Ketua
+
+Tampilkan:
+
+* Total Anggota
+* Total Tagihan
+* Total Pemasukan
+* Total Pengeluaran
+* Saldo Kas
+* Total Belum Lunas
+
+Gunakan card modern.
+
+---
+
+# Dashboard Bendahara
+
+Tampilkan:
+
+* Saldo Kas
+* Total Tagihan Aktif
+* Total Pemasukan
+* Total Pengeluaran
+* Pembayaran Terbaru
+
+---
+
+# Dashboard Anggota
+
+Tampilkan:
+
+* Tagihan Aktif
+* Riwayat Pembayaran
+* Total Tunggakan
+
+---
+
+# Modul Anggota
+
+Data anggota:
+
+* Nama Lengkap
+* Nomor WhatsApp
+* Username
+* Password
+* Role
+
+Nomor WhatsApp harus unik.
+
+Nomor otomatis dikonversi ke format internasional.
+
+Contoh:
+
+081234567890
+
+↓
+
+6281234567890
+
+---
+
+# Modul Tagihan
+
+Bendahara dapat membuat tagihan tanpa batas.
+
+Contoh:
+
+* Kas Bulanan
+* Study Tour
+* Buku
+* Kaos
+* Wisuda
+* Iuran Acara
+* Lainnya
+
+Field:
+
+* Nama Tagihan
+* Kategori
+* Nominal
+* Deskripsi
+* Tanggal Dibuat
+* Deadline
+* Status Aktif
+
+---
+
+# Modul Pembayaran
+
+Flow:
+
+Siswa membayar langsung ke Bendahara.
+
+↓
+
+Bendahara membuka halaman tagihan.
+
+↓
+
+Cari nama siswa.
+
+↓
+
+Klik:
+
+"Tandai Lunas"
+
+↓
+
+Status berubah menjadi:
+
+"Lunas"
+
+Tidak ada upload bukti.
+
+Tidak ada transfer.
+
+Tidak ada QRIS.
+
+---
+
+# Halaman Detail Tagihan
+
+Halaman ini merupakan halaman utama Bendahara.
+
+Di bagian atas tampilkan statistik:
+
+* Total Anggota
+* Total Lunas
+* Total Belum Lunas
+* Target Tagihan
+* Total Dana Terkumpul
+* Progress Bar Pembayaran
+
+Di bawah statistik tampilkan fitur:
+
+## Search
+
+Cari berdasarkan:
+
+* Nama siswa
+* Username
+
+Search harus menggunakan query Prisma (`contains`) sehingga pencarian dilakukan oleh PostgreSQL.
+
+---
+
+## Filter
+
+Gunakan Quick Filter berbentuk Tabs (bukan dropdown).
+
+Tabs:
+
+* Semua
+* Belum Lunas
+* Lunas
+
+Masing-masing tab menampilkan jumlah data.
+
+Contoh:
+
+Semua (36)
+
+Belum Lunas (8)
+
+Lunas (28)
+
+Saat memilih tab:
+
+Belum Lunas
+
+Maka hanya siswa yang belum membayar yang ditampilkan.
+
+---
+
+## Sorting
+
+Sediakan sorting:
+
+* Nama A-Z
+* Nama Z-A
+* Terbaru Dibayar
+* Terlama Dibayar
+
+Sorting harus dilakukan menggunakan Prisma (`orderBy`) sehingga pengurutan dilakukan langsung oleh PostgreSQL, bukan algoritma sorting manual.
+
+---
+
+## Tabel Pembayaran
+
+Kolom:
+
+* Nama
+* Username
+* Status
+* Tanggal Bayar
+* Aksi
+
+Jika status:
+
+Belum Lunas
+
+Muncul tombol:
+
+"Tandai Lunas"
+
+Jika status:
+
+Lunas
+
+Muncul tombol:
+
+"Batalkan"
+
+Gunakan Optimistic UI sehingga setelah klik "Tandai Lunas", data langsung berubah tanpa reload halaman.
+
+---
+
+# Modul Pengeluaran
+
+Field:
+
+* Nama
+* Nominal
+* Kategori
+* Tanggal
+* Keterangan
+
+Saldo dihitung otomatis.
+
+Saldo = Total Pemasukan - Total Pengeluaran
+
+---
+
+# Modul Laporan
+
+Buat halaman laporan profesional.
+
+Filter:
+
+* Dari Tanggal
+* Sampai Tanggal
+
+Kemudian tampilkan:
+
+* Total Pemasukan
+* Total Pengeluaran
+* Saldo
+* Daftar Pembayaran
+* Daftar Pengeluaran
+
+Tombol:
+
+* Tampilkan
+* Export Excel
+* Export PDF
+
+---
+
+# Reminder WhatsApp
+
+Bendahara dapat mengirim reminder.
+
+Pilihan:
+
+* Kirim ke semua yang belum lunas
+* Kirim ke siswa tertentu
+
+Gunakan:
+
+https://wa.me/<nomor>?text=<pesan>
+
+Jangan menggunakan WhatsApp API.
+
+Pesan default:
+
+Halo {Nama},
+
+Ini adalah pengingat bahwa tagihan "{Nama Tagihan}" sebesar Rp{Nominal} masih berstatus BELUM LUNAS.
+
+Silakan melakukan pembayaran langsung kepada Bendahara kelas.
+
+Terima kasih.
+
+Pesan dapat diubah pada menu Pengaturan.
+
+---
+
+# Audit Log
+
+Catat aktivitas:
+
+* Login
+* Logout
+* Membuat Tagihan
+* Edit Tagihan
+* Hapus Tagihan
+* Menandai Lunas
+* Membatalkan Lunas
+* Tambah Anggota
+* Edit Anggota
+* Hapus Anggota
+* Ganti Bendahara
+
+Audit Log hanya dapat dilihat Ketua.
+
+---
+
+# UI / UX
+
+Gunakan desain SaaS modern.
+
+Harus memiliki:
+
+* Responsive
+* Mobile First
+* Sidebar
+* Navbar
+* Dashboard Card
+* Statistik
+* Progress Bar
+* Search
+* Filter
+* Sorting
+* Empty State
+* Loading Skeleton
+* Toast Notification
+* Dialog Confirmation
+* Pagination
+* Breadcrumb
+* Dark Mode
+* Light Mode
+
+Gunakan shadcn/ui.
+
+Animasi secukupnya menggunakan Framer Motion.
+
+---
+
+# Database Prisma
+
+Minimal terdiri dari model:
+
+* User
+* Bill
+* BillPayment
+* Expense
+* AuditLog
+* Setting
+
+Gunakan relasi yang benar.
+
+Gunakan Enum PostgreSQL.
+
+Contoh Enum:
+
+Role:
+
+* KETUA
+* BENDAHARA
+* ANGGOTA
+
+PaymentStatus:
+
+* BELUM_LUNAS
+* LUNAS
+
+---
+
+# Security
+
+Gunakan:
+
+* bcrypt untuk hashing password
+* Middleware proteksi role
+* Zod Validation
+* Environment Variables
+* Server Actions
+* Sanitasi input
+* Error Handling
+* Session Authentication
+
+---
+
+# Struktur Folder
+
+Gunakan Clean Architecture.
+
+Contoh:
+
+app/
+
+components/
+
+actions/
+
+lib/
+
+hooks/
+
+prisma/
+
+types/
+
+utils/
+
+validations/
+
+services/
+
+repositories/
+
+Gunakan reusable component.
+
+---
+
+# Kualitas Kode
+
+Ikuti Best Practice Next.js 15.
+
+Gunakan:
+
+* Server Component
+* Client Component jika diperlukan
+* TypeScript Strict
+* Modular
+* Clean Code
+* SOLID Principle
+* Optimistic UI
+* Error Boundary
+* Loading UI
+* Metadata SEO
+
+---
+
+# README
+
+Buat README lengkap berisi:
+
+* Instalasi
+* Konfigurasi Environment
+* Prisma Migration
+* Prisma Generate
+* Seed Database
+* Login Demo
+* Struktur Folder
+* Deployment ke Vercel
+* Konfigurasi Neon PostgreSQL
+
+---
+
+# Seed Data
+
+Sediakan data awal:
+
+1 Ketua
+
+1 Bendahara
+
+10 Anggota
+
+Beberapa Tagihan
+
+Beberapa Pembayaran
+
+Beberapa Pengeluaran
+
+---
+
+# Target Akhir
+
+Hasil akhir harus berupa aplikasi **production-ready** yang dapat langsung dijalankan secara lokal maupun di-deploy ke **Vercel** menggunakan **Neon PostgreSQL** sebagai database dan **Prisma ORM** sebagai lapisan akses data.
+
+Aplikasi harus memiliki performa tinggi, UI modern, kode yang bersih, mudah dikembangkan, serta menerapkan praktik terbaik dalam pengembangan aplikasi web modern.
+
+Pastikan seluruh fitur telah berfungsi dengan baik, responsif di desktop maupun mobile, serta siap digunakan sebagai proyek portfolio maupun aplikasi nyata untuk pengelolaan keuangan kelas.
