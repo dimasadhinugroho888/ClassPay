@@ -27,13 +27,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  session: { strategy: "jwt" },
   callbacks: {
-    ...authConfig.callbacks,
+    authorized: authConfig.callbacks!.authorized,
     jwt: async ({ token, user }) => {
       if (user) {
-        token.role = user.role
-        token.mustChangePassword = user.mustChangePassword
-      } else if (token.sub) {
+        // First sign-in: populate token from user object returned by authorize()
+        token.role = (user as { role?: string }).role ?? "ANGGOTA"
+        token.mustChangePassword = Boolean((user as { mustChangePassword?: boolean }).mustChangePassword)
+        token.id = user.id
+      } else if (token.sub && !token.role) {
+        // Fallback: re-fetch from DB if role somehow missing
         const dbUser = await prisma.user.findUnique({
           where: { id: token.sub },
           select: { role: true, mustChangePassword: true }
@@ -47,8 +51,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     session: ({ session, token }) => {
       if (session.user) {
-        session.user.id = token.sub!
-        session.user.role = token.role as "KETUA" | "BENDAHARA" | "ANGGOTA"
+        session.user.id = (token.id as string) ?? token.sub!
+        session.user.role = (token.role as "KETUA" | "BENDAHARA" | "ANGGOTA") ?? "ANGGOTA"
         session.user.mustChangePassword = Boolean(token.mustChangePassword)
       }
       return session
