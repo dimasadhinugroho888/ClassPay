@@ -7,8 +7,8 @@ async function main() {
   for (const person of people) await prisma.user.upsert({ where:{ username:person.username }, update:{}, create:{...person,passwordHash,mustChangePassword:false} })
   const members = await prisma.user.findMany({ where:{ role:Role.ANGGOTA } })
   const bill = await prisma.bill.upsert({ where:{ id:"seed-kas-bulanan" }, update:{}, create:{ id:"seed-kas-bulanan",name:"Kas Bulanan Juli",category:"Kas",amount:25000,description:"Iuran kas kelas bulan Juli",deadline:new Date("2026-07-31") } })
-  await prisma.bill.create({ data:{ name:"Study Tour",category:"Kegiatan",amount:150000,description:"Dana kegiatan kelas",deadline:new Date("2026-08-20") } }).catch(()=>null)
+  await prisma.bill.upsert({ where:{ id:"seed-study-tour" }, update:{}, create:{ id:"seed-study-tour",name:"Study Tour",category:"Kegiatan",amount:150000,description:"Dana kegiatan kelas",deadline:new Date("2026-08-20") } })
   for (const [i, member] of members.entries()) await prisma.billPayment.upsert({ where:{ billId_userId:{ billId:bill.id,userId:member.id } }, update:{}, create:{ billId:bill.id,userId:member.id,status:i<6?PaymentStatus.LUNAS:PaymentStatus.BELUM_LUNAS,paidAt:i<6?new Date():null } })
-  await prisma.expense.create({ data:{name:"Perlengkapan kelas",amount:75000,category:"Operasional",date:new Date(),description:"Pembelian alat kebersihan"} }).catch(()=>null)
+  await prisma.expense.upsert({ where:{ id:"seed-perlengkapan" }, update:{}, create:{id:"seed-perlengkapan",name:"Perlengkapan kelas",amount:75000,category:"Operasional",date:new Date(),description:"Pembelian alat kebersihan"} })
 }
 main().finally(()=>prisma.$disconnect())
