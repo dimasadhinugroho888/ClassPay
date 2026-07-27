@@ -17,6 +17,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   })],
   pages: { signIn: "/login" },
   callbacks: {
+    authorized: ({ auth, request: { nextUrl } }) => {
+      const isLoggedIn = !!auth?.user
+      const isLoginPage = nextUrl.pathname === "/login"
+      
+      if (isLoginPage) {
+        if (isLoggedIn) {
+          // Redirect logged-in users away from login page
+          return Response.redirect(new URL("/dashboard", nextUrl))
+        }
+        return true
+      }
+      
+      // Protect all other routes - redirect to login if not authenticated
+      if (!isLoggedIn) {
+        return false // NextAuth will redirect to signIn page
+      }
+      
+      return true
+    },
     jwt: async ({ token, user }) => {
       if (user) {
         token.role = user.role;
