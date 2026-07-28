@@ -9,14 +9,19 @@ export default async function MembersPage({
 }: {
   searchParams: Promise<{ editId?: string }>
 }) {
+  // Step 1: verify role
   await requireRole("KETUA")
-  const { editId } = await searchParams
 
+  // Step 2: await searchParams (Next.js 15+ requires this)
+  const params = await searchParams
+  const editId = params?.editId
+
+  // Step 3: query DB
   const members = await prisma.user.findMany({
     orderBy: { name: "asc" }
   })
 
-  // If editing, find the member details
+  // Step 4: find editing member if needed
   const editingMember = editId
     ? await prisma.user.findUnique({ where: { id: editId } })
     : null
@@ -56,11 +61,11 @@ export default async function MembersPage({
                     <td className="p-4 text-slate-300">{m.whatsapp}</td>
                     <td className="p-4">
                       <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-bold ${
-                        m.role === "KETUA" 
-                          ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" 
+                        m.role === "KETUA"
+                          ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                           : m.role === "BENDAHARA"
                           ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                          : "bg-slate-850 text-slate-400 border border-slate-805"
+                          : "bg-slate-800 text-slate-400 border border-slate-700"
                       }`}>
                         {m.role}
                       </span>
@@ -124,33 +129,33 @@ export default async function MembersPage({
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400">Nama Lengkap</label>
-              <input 
-                name="name" 
-                placeholder="Nama lengkap siswa" 
-                defaultValue={editingMember?.name ?? ""} 
-                required 
+              <input
+                name="name"
+                placeholder="Nama lengkap siswa"
+                defaultValue={editingMember?.name ?? ""}
+                required
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400">Username</label>
-              <input 
-                name="username" 
-                placeholder="username" 
-                defaultValue={editingMember?.username ?? ""} 
-                required 
+              <input
+                name="username"
+                placeholder="username"
+                defaultValue={editingMember?.username ?? ""}
+                required
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400">Nomor WhatsApp</label>
-              <input 
-                name="whatsapp" 
-                placeholder="08123456789" 
-                defaultValue={editingMember?.whatsapp ?? ""} 
-                required 
+              <input
+                name="whatsapp"
+                placeholder="08123456789"
+                defaultValue={editingMember?.whatsapp ?? ""}
+                required
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
               />
             </div>
@@ -159,19 +164,19 @@ export default async function MembersPage({
               <label className="text-xs font-semibold text-slate-400">
                 {editingMember ? "Password Baru (Kosongkan jika tidak diganti)" : "Password Awal"}
               </label>
-              <input 
-                name="password" 
-                type="password" 
-                placeholder={editingMember ? "Minimal 8 karakter" : "Password awal siswa"} 
-                required={!editingMember} 
+              <input
+                name="password"
+                type="password"
+                placeholder={editingMember ? "Minimal 8 karakter" : "Password awal siswa"}
+                required={!editingMember}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 outline-none"
               />
             </div>
 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-400">Peran Aplikasi</label>
-              <select 
-                name="role" 
+              <select
+                name="role"
                 defaultValue={editingMember?.role ?? "ANGGOTA"}
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-slate-200 focus:border-emerald-400 outline-none"
               >
@@ -180,8 +185,8 @@ export default async function MembersPage({
               </select>
             </div>
 
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="w-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-bold py-3 px-4 rounded-xl transition duration-200 text-sm mt-4 cursor-pointer"
             >
               {editingMember ? "Simpan Perubahan" : "Simpan Anggota"}
