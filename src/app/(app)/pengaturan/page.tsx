@@ -76,7 +76,7 @@ export default async function SettingsPage({
 
             <form action={updateReminder} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-400 font-medium">Isi Pesan WhatsApp</label>
+                <label className="text-xs font-semibold text-slate-400">Isi Pesan WhatsApp</label>
                 <textarea
                   name="message"
                   defaultValue={setting?.value ?? defaultMessage}

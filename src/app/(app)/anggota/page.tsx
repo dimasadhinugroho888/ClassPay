@@ -9,19 +9,13 @@ export default async function MembersPage({
 }: {
   searchParams: Promise<{ editId?: string }>
 }) {
-  // Step 1: verify role
   await requireRole("KETUA")
+  const { editId } = await searchParams
 
-  // Step 2: await searchParams (Next.js 15+ requires this)
-  const params = await searchParams
-  const editId = params?.editId
-
-  // Step 3: query DB
   const members = await prisma.user.findMany({
     orderBy: { name: "asc" }
   })
 
-  // Step 4: find editing member if needed
   const editingMember = editId
     ? await prisma.user.findUnique({ where: { id: editId } })
     : null
