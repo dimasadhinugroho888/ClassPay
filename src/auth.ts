@@ -23,11 +23,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         })
         if (!user || !(await compare(data.data.password, user.passwordHash))) return null
 
-        // Return all fields explicitly — NextAuth v5 passes this to jwt callback as `user`
         return {
           id: user.id,
           name: user.name,
-          email: user.username, // NextAuth expects email field, use username as fallback
+          // NextAuth needs email; use username as stand-in
+          email: user.username,
           role: user.role,
           mustChangePassword: user.mustChangePassword,
         }
@@ -39,31 +39,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     authorized: authConfig.callbacks!.authorized,
     jwt: async ({ token, user }) => {
       if (user) {
-        // First sign-in: `user` is the object returned from authorize()
-        // Cast to any to access custom fields
-        const u = user as {
-          id: string
-          role: string
-          mustChangePassword: boolean
-        }
-        token.sub = u.id
-        token.role = u.role
-        token.mustChangePassword = u.mustChangePassword
+        // On sign-in: copy custom fields from authorize() return value into token
+        token.sub = user.id
+        token.role = (user as unknown as { role: string }).role
+        token.mustChangePassword = (user as unknown as { mustChangePassword: boolean }).mustChangePassword
       }
-
-      // Always re-fetch from DB to keep role in sync
-      // (handles role changes without forcing re-login)
-      if (token.sub) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: token.sub },
-          select: { role: true, mustChangePassword: true }
-        })
-        if (dbUser) {
-          token.role = dbUser.role
-          token.mustChangePassword = dbUser.mustChangePassword
-        }
-      }
-
       return token
     },
     session: ({ session, token }) => {
