@@ -1,6 +1,6 @@
 import Link from "next/link"
-import { signOut } from "@/auth"
 import type { AppRole } from "@/lib/access"
+import { SignOutButton } from "./sign-out-button"
 import { 
   LayoutDashboard, 
   Receipt, 
@@ -8,8 +8,7 @@ import {
   FileText, 
   Users, 
   Activity, 
-  Settings, 
-  LogOut,
+  Settings,
   AlertTriangle
 } from "lucide-react"
 
@@ -91,17 +90,7 @@ export function AppShell({
             </div>
           </div>
 
-          <form
-            action={async () => {
-              "use server"
-              await signOut({ redirectTo: "/login" })
-            }}
-          >
-            <button className="flex w-full items-center justify-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-rose-400 hover:bg-rose-500/10 transition-all duration-200 cursor-pointer">
-              <LogOut className="w-4 h-4" />
-              <span className="hidden md:inline">Keluar</span>
-            </button>
-          </form>
+          <SignOutButton />
         </div>
       </aside>
 
